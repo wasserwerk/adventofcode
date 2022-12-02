@@ -14,8 +14,7 @@
   (mapcar 'string-to-number (read-lines file)))
 
 (defun read-pairs (file)
-  "Read file linewise as paris of two symbols and return a list
-of cons, one per line."
+  "Read file as pairs of two symbols and return a list of cons."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
