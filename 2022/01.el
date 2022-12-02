@@ -1,13 +1,20 @@
-;; You need dash.el for partition. 
+;; Need dash.el for partition and take.
 (require 'dash)
 
-(load-file "utils/read-lines.el")
+(load-file "utils/utils.el")
 
-(defun solve (cals)
-  (apply 'max
-         (mapcar (lambda (x)
-                   (apply '+ x))
-                 cals)))
+(defun sum-cals (cals)
+  (mapcar (lambda (x)
+            (apply '+ x))
+          cals))
 
-(solve (-split-when 'zerop (read-lines-as-numbers "01.in")))
+(setq cals (-split-when 'zerop (read-lines-as-numbers "01.in")))
 
+;; part 1
+(apply 'max (sum-cals cals))
+
+;; part 2
+(apply '+ (-take 3 (sort (mapcar (lambda (x)
+                                   (apply '+ x))
+                                 cals)
+                         '>)))
