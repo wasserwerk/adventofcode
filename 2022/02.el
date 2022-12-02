@@ -28,8 +28,10 @@
 
 (defun score-2 (round)
   (let ((outcome (find-if (lambda (o)
-                            (and (eq (car round) (caar o))
-                                 (eq (cdr (assoc (cdr round) score-indicator)) (cdr o))))
+                            (and (eq (car round)
+                                     (caar o))
+                                 (eq (cdr (assoc (cdr round) score-indicator))
+                                     (cdr o))))
                           score-outcome)))
     (+ (cdr outcome)
        (cdr (assoc (cdar outcome) score-shape)))))
