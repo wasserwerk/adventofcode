@@ -40,10 +40,6 @@
 (defun top (stack)
   (string-join (mapcar 'car stack)))
 
-(defun solve (fn)
-  (mapc (lambda (m) (apply fn stack m)) moves)
-  (top))
-
 (defun solve (file fn)
   (let* ((number-of-stacks 0)
          (data (read-data file))
