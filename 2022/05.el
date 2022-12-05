@@ -3,7 +3,8 @@
     (insert-file-contents file)
     (goto-char (point-min))
     (let (stack
-          moves)
+          moves
+          end)
       (save-excursion
         (setq end (re-search-forward "^$" nil t)))
       (while (re-search-forward "\\([A-Z]\\| [0-9] \\|    \\)" end t)
