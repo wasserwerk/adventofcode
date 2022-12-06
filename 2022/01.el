@@ -1,20 +1,35 @@
-;; Need dash.el for partition and take.
+;;;; Day 1: Calorie Counting
+
+;; Need dash for partition and take.
 (require 'dash)
 
-(load-file "utils/utils.el")
+(defun read-lines (file)
+  (with-temp-buffer
+    (insert-file-contents file)
+    (goto-char (point-min))
+    (split-string (buffer-string) "\n")))
 
-(defun sum-cals (cals)
+(defun read-lines-as-numbers (file)
+  (mapcar 'string-to-number (read-lines file)))
+
+(defun prepare-data (data)
+  (setq calories (-split-when 'zerop data)))
+
+(defun sum-calories (calories)
   (mapcar (lambda (x)
             (apply '+ x))
-          cals))
+          calories))
 
-(setq cals (-split-when 'zerop (read-lines-as-numbers "01.in")))
+(defun solve-1 (calories)
+  (apply 'max (sum-calories calories)))
 
-;; part 1
-(apply 'max (sum-cals cals))
+(defun solve-2 (calories)
+  (apply '+ (seq-take (sort (mapcar (lambda (x)
+                                      (apply '+ x))
+                                    calories)
+                            '>) 3)))
 
-;; part 2
-(apply '+ (-take 3 (sort (mapcar (lambda (x)
-                                   (apply '+ x))
-                                 cals)
-                         '>)))
+(setq data (prepare-data (read-lines-as-numbers "01.in")))
+
+(solve-1 data)
+(solve-2 data)
