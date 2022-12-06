@@ -1,11 +1,10 @@
+;;;; 2022, Day 3: Rucksack Reorganization
+
 (defun read-lines (file)
-  "Read file and return a list of all lines as strings."
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
     (split-string (buffer-string) "\n")))
-
-(setq data (read-lines "03.in"))
 
 (defun part-1 (rucksack)
   (apply 'seq-intersection
@@ -37,6 +36,8 @@
                     (apply 'append (mapcar (lambda (i)
                                              (or (remove-duplicates i :test 'string=) ""))
                                            (funcall fn data))))))
+
+(setq data (read-lines "03.in"))
 
 (solve 'fn-1 data)
 (solve 'fn-2 data)

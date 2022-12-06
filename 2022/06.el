@@ -1,3 +1,5 @@
+;;;; 2022, Day 6: Tuning Trouble
+
 (defun read-data (file)
   (with-temp-buffer
     (insert-file-contents file)
@@ -27,6 +29,4 @@
 (setq data (read-data "06.in"))
 
 (solve-1 data)
-
 (solve-2 data)
-
