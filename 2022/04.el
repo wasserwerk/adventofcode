@@ -8,32 +8,24 @@
 
 (defun prepare-data (data)
   (mapcar (lambda (r)
-            (destructuring-bind (a-1 a-2 b-1 b-2)
+            (destructuring-bind (a1 a2 b1 b2)
                 (mapcar 'string-to-number (split-string r "[,-]"))
-              (list (cons a-1 a-2) (cons b-1 b-2))))
+              (list (cons a1 a2) (cons b1 b2))))
           data))
 
-(defun up-contains-p (pairs)
-  (destructuring-bind ((a-1 . a-2) (b-1 . b-2))
-      pairs
-    (and (>= b-1 a-1)
-         (<= b-2 a-2))))
-
-(defun down-contains-p (pairs)
-  (destructuring-bind ((a-1 . a-2) (b-1 . b-2))
-      pairs
-    (and (>= a-1 b-1)
-         (<= a-2 b-2))))
-
 (defun fully-contains-p (pairs)
-  (or (up-contains-p pairs)
-      (down-contains-p pairs)))
+  (destructuring-bind ((a1 . a2) (b1 . b2))
+      pairs
+    (or (and (>= b1 a1)
+             (<= b2 a2))
+        (and (>= a1 b1)
+             (<= a2 b2)))))
 
 (defun overlap-p (pairs)
-  (destructuring-bind ((a-1 . a-2) (b-1 . b-2))
+  (destructuring-bind ((a1 . a2) (b1 . b2))
       pairs
-    (and (>= b-2 a-1)
-         (>= a-2 b-1))))
+    (and (>= b2 a1)
+         (>= a2 b1))))
 
 (defun solve-1 (data)
   (count t (mapcar 'fully-contains-p data)))
@@ -45,4 +37,4 @@
 
 (solve-1 data)
 (solve-2 data)
- 
+
