@@ -1,5 +1,8 @@
 ;;;; 2022, Day 8: Treetop Tree House
 
+;; Needs dash for flatten
+(require 'dash)
+
 (defun read-data (file)
   (with-temp-buffer
     (insert-file-contents file)
@@ -24,31 +27,66 @@
                  (funcall fn (car xs) (car carry)))))
       (reduce-with-intermediates fn (cdr xs) (cons res carry)))))
 
-(defun visible (seq)
+(defun part-1 (seq)
   (let ((rr (reduce-with-intermediates 'max seq))
         (rl (reverse (reduce-with-intermediates 'max (reverse seq)))))
     (append '(t)
-            (cl-mapcar (lambda (a b)
-                         (or a b))
-                       (cl-subseq (cl-mapcar '>
+            (cl-subseq (cl-mapcar (lambda (a b)
+                                    (or a b))
+                                  (cl-mapcar '>
                                              rr
                                              (rotate-list-right rr))
-                                  1 -1)
-                       (cl-subseq (cl-mapcar '>
+                                  (cl-mapcar '>
                                              rl
-                                             (rotate-list-left rl))
-                                  1 -1))
+                                             (rotate-list-left rl)))
+                       1 -1)
             '(t))))
 
 (defun solve-1 (data)
-  (count t (flatten (cl-mapcar (lambda (seq1 seq2)
+  (count t (-flatten (cl-mapcar (lambda (seq1 seq2)
                                  (cl-mapcar (lambda (a b)
                                               (or a b))
                                             seq1
                                             seq2))
-                               (mapcar 'visible data)
-                               (transpose-matrix (mapcar 'visible (transpose-matrix data)))))))
+                               (mapcar 'part-1 data)
+                               (transpose-matrix (mapcar
+                                                  'part-1
+                                                  (transpose-matrix data)))))))
+
+(defun count-until-aux (pred elm seq counter)
+  (if seq
+      (progn
+        (incf counter)
+        (if (not (funcall pred (car seq) elm))
+            (count-until-aux pred elm (cdr seq) counter)
+          counter))
+    counter))
+
+(defun count-until (pred elm seq)
+  (count-until-aux pred elm seq 0))
+
+(defun count-trees (data)
+  (mapcar (lambda (seq)
+            (maplist (lambda (sub)
+                       (count-until '>= (car sub) (cdr sub)))
+                     seq))
+          data))
+
+(defun solve-2 (data)
+  (apply 'max (-flatten
+               (cl-mapcar (lambda (a b c d)
+                            (cl-mapcar '* a b c d))
+                          (count-trees data)
+                          (mapcar 'reverse
+                                  (count-trees (mapcar 'reverse data)))
+                          (transpose-matrix (count-trees (transpose-matrix data)))
+                          (transpose-matrix (mapcar
+                                             'reverse
+                                             (count-trees (mapcar
+                                                           'reverse
+                                                           (transpose-matrix data)))))))))
 
 (setq data (prepare-data (read-data "08.in")))
 
 (solve-1 data)
+(solve-2 data)
