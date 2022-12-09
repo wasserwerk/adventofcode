@@ -1,6 +1,6 @@
 ;;;; 2022, Day 1: Calorie Counting
 
-;; Need dash for partition (-split-when)
+;; Needs dash for partition (-split-when)
 (require 'dash)
 
 (defun read-lines (file)
