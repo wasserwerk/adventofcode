@@ -24,6 +24,27 @@
   (add-to-list 'tail-track
                (copy-list (car (last rope)))))
 
+(defun max-2 (n)
+  (cond ((>= n 2)
+         1)
+        ((<= n -2)
+         -1)
+        (t n)))
+
+(defun too-far-p (m)
+  (or (> (abs (car m)) 1)
+      (> (abs (cdr m)) 1)))
+
+(defun bring-it-closer (p)
+  (cons (max-2 (car p))
+        (max-2 (cdr p))))
+
+(defun move-vector (a b)
+  (cons (- (car a)
+           (car b))
+        (- (cdr a)
+           (cdr b))))
+
 (defun move-head (dir head)
   (case dir
     ('L (decf (car head)))
@@ -32,37 +53,16 @@
     ('D (decf (cdr head))))
   head)
 
-(defun move-vector (a b)
-  (cons (- (car a)
-           (car b))
-        (- (cdr a)
-           (cdr b))))
-
-(defun max-2 (n)
-  (cond ((>= n 2)
-         1)
-        ((<= n -2)
-         -1)
-        (t n)))
-
-(defun bring-it-closer (p)
-  (cons (max-2 (car p))
-        (max-2 (cdr p))))
-
-(defun too-far-p (m)
-  (or (> (abs (car m)) 1)
-      (> (abs (cdr m)) 1)))
-
-(defun reduce-move-vector (p m)
-  (let ((n (bring-it-closer m)))
-    (cons (+ (car p) (car n))
-          (+ (cdr p) (cdr n)))))
-
 (defun move-tail (a b)
   (let ((m (move-vector a b)))
     (if (too-far-p m)
         (reduce-move-vector b m)
       b)))
+
+(defun reduce-move-vector (p m)
+  (let ((n (bring-it-closer m)))
+    (cons (+ (car p) (car n))
+          (+ (cdr p) (cdr n)))))
 
 (defun process-tail (h r)
   (if (car r)
