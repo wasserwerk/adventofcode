@@ -24,7 +24,6 @@
 (defun fn-2 (data)
   (mapcar 'part-2 (seq-partition data 3)))
 
-
 (defun solve (fn data)
   (apply '+ (mapcar (lambda (c)
                       (let ((code (string-to-char c)))
