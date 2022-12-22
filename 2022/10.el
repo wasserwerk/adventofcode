@@ -65,13 +65,12 @@
                        do (setq sprite (1- reg))
                        do (incf cycle)
                        finally do (return (reverse row)))))
-    (progn
-      (princ (concat (string-join 
-                      (mapcar (lambda (row)
-                                (apply 'string (subst ?. 0 (subst ?# 1 row))))
-                              (seq-partition display 40))
-                      "\n") "\n"))
-      nil)))
+    (princ (concat (string-join 
+                    (mapcar (lambda (row)
+                              (apply 'string (subst ?. 0 (subst ?# 1 row))))
+                            (seq-partition display 40))
+                    "\n") "\n"))
+    nil))
 
 (setq data (read-data "10.in"))
 
