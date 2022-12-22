@@ -32,7 +32,6 @@
         do (incf pc (car inst))
         do (incf reg (cdr inst))))
 
-
 (defun draw-pixel-p (p s)
   (and (>= p s)
        (<= p (+ s 2))))
@@ -41,7 +40,6 @@
   `(if (draw-pixel-p ,p ,s)
        (push 1 ,r)
      (push 0 ,r)))
-
 
 (defun solve-2 (data)
   (let ((display (loop with reg = 1
