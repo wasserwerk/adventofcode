@@ -1,53 +1,81 @@
 ;;;; 2022, Day 10: Cathode-Ray Tube
 
-(defvar cycles '(20 60 100 140 180 220))
-
 (defun read-data (file)
   (with-temp-buffer
     (insert-file-contents file)
     (goto-char (point-min))
     (let (prog)
       (while (not (eobp))
-        (cond ((looking-at "^addx \\([-]*[0-9]+\\)$")
-               (push (cons 2 (string-to-number (match-string 1))) prog))
-              ((looking-at "^noop$")
-               (push (cons 1 0) prog)))
+        (push (buffer-substring (line-beginning-position) (line-end-position)) prog)
         (forward-line))
       (reverse prog))))
 
-(cl-defun reduce-with-intermediates (fn xs &optional carry)
-  "Source: https://kaygun.tumblr.com/post/661067146753982464/reduce-with-intermediate-results-in-common-lisp"
-  (if (null xs)
-      (nreverse carry)
-      (let ((res (if (null carry)
-                     (funcall fn (car xs))
-                     (funcall fn (car xs) (car carry)))))
-        (reduce-with-intermediates fn (cdr xs) (cons res carry)))))
+(defun decode (inst)
+  (cond ((string-match "addx[ +]\\([-]*[0-9]+\\)" inst)
+         (cons 2 (string-to-number (substring-no-properties inst (match-beginning 1) (match-end 1)))))
+        ((string-match "noop" inst)
+         (cons 1 0))
+        (t (error "invalid instruction"))))
 
-(defun run-program (prog)
-  (reduce-with-intermediates (lambda (a &optional b)
-                               (cons (+ (car a) (or (car b) 0))
-                                     (+ (cdr a) (or (cdr b) 0))))
-                             (append (list '(0 . 1)) prog)))
+(defun solve-1 (data)
+  (loop with prog = data
+        with cycles = '(20 60 100 140 180 220)
+        with cycle = (pop cycles)
+        with reg = 1
+        with pc = 0
+        for inst = (decode (pop prog))
+        while (and inst cycle)
+        if (and (>= pc (- cycle 2))
+                (<= pc cycle))
+        sum (* cycle reg)
+        and do (setq cycle (pop cycles))
+        do (incf pc (car inst))
+        do (incf reg (cdr inst))))
 
-(defun cycle-value (run cycle)
-  (car (last (-take-while (lambda (p)
-                            (<= (car p) (1- cycle)))
-                          run))))
 
-(defun cycle-values (run)
-  (mapcar (lambda (c)
-            (cycle-value run c))
-          cycles))
+(defun draw-pixel-p (p s)
+  (and (>= p s)
+       (<= p (+ s 2))))
 
-(defun solve-1 (run)
-  (apply '+
-         (cl-mapcar (lambda (c v)
-                      (* c (cdr v)))
-                    cycles
-                    (cycle-values run))))
+(defmacro update-pixel (p s r)
+  `(if (draw-pixel-p ,p ,s)
+       (push 1 ,r)
+     (push 0 ,r)))
 
-(setq prog (read-data "10.in"))
 
-(solve-1 (run-program prog))
+(defun solve-2 (data)
+  (let ((display (loop with reg = 1
+                       with sprite = (1- reg)
+                       with pos = 0
+                       with cycle = 1
+                       with code = ()
+                       with row = ()
+                       for inst in data
+                       while inst
+                       do (setq code (decode inst))
+                       do (loop with c = 0
+                                repeat (car code)
+                                do (update-pixel pos sprite row)
+                                do (incf pos)
+                                if (and (= c 0)
+                                        (= (car code) 2))
+                                do (incf cycle)
+                                do (incf c)
+                                if (= pos 40)
+                                do (setq pos 0))
+                       do (incf reg (cdr code))
+                       do (setq sprite (1- reg))
+                       do (incf cycle)
+                       finally do (return (reverse row)))))
+    (progn
+      (princ (concat (string-join 
+                      (mapcar (lambda (row)
+                                (apply 'string (subst ?. 0 (subst ?# 1 row))))
+                              (seq-partition display 40))
+                      "\n") "\n"))
+      nil)))
 
+(setq data (read-data "10.in"))
+
+(solve-1 data)
+(solve-2 data)
