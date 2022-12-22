@@ -75,5 +75,6 @@
 
 (setq data (read-data "10.in"))
 
+
 (solve-1 data)
 (solve-2 data)
